@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大学生无纸化学习平板对比分析 · 2026年9月</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --ink:#1f2726; --sub:#5b6664; --line:#e3e8e7; --bg:#f5f7f6;
+    --teal:#2f8f83; --teal-soft:#e4f1ef; --amber:#d08a2e; --amber-soft:#faf0df;
+    --red:#c0563f; --green:#3d8b5f; --card:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg);line-height:1.7;font-size:15px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px 64px}
+  header.hero{background:linear-gradient(135deg,#246b62,#2f8f83);color:#fff;padding:44px 0 36px;margin-bottom:28px}
+  header.hero .wrap{padding-bottom:0}
+  h1{font-size:27px;font-weight:700;letter-spacing:.5px}
+  .hero p{margin-top:10px;color:#dcefed;font-size:14.5px}
+  .hero .tags{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+  .tag{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);padding:3px 12px;border-radius:999px;font-size:12.5px}
+  section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 28px;margin-top:20px}
+  h2{font-size:19px;margin-bottom:14px;display:flex;align-items:center;gap:9px}
+  h2::before{content:"";width:5px;height:19px;background:var(--teal);border-radius:3px}
+  h3{font-size:16px;margin:18px 0 8px}
+  p{color:#33403e}
+  .muted{color:var(--sub);font-size:13px}
+  /* 结论速览 */
+  .verdict-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
+  .v-card{border:1px solid var(--line);border-radius:11px;padding:14px 16px;background:#fbfcfc}
+  .v-card .rank{font-size:12px;font-weight:700;color:var(--teal);letter-spacing:1px}
+  .v-card .name{font-size:16.5px;font-weight:700;margin:3px 0}
+  .v-card .why{font-size:13px;color:var(--sub);line-height:1.55}
+  .v-card.top{border:1.5px solid var(--teal);background:var(--teal-soft)}
+  /* 背景条 */
+  .bg-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .bg-box{background:#fbfcfc;border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:9px;padding:13px 16px;font-size:13.8px}
+  .bg-box b{color:var(--amber)}
+  .bg-box ul{margin-left:18px;margin-top:5px;color:#44504e}
+  /* 表格 */
+  .table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+  table{border-collapse:collapse;width:100%;min-width:760px;font-size:13.3px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{background:var(--teal-soft);color:#1d524b;font-weight:700;white-space:nowrap}
+  tbody tr:nth-child(even){background:#fafbfb}
+  td.dim{font-weight:600;color:#1d524b;background:#f3f8f7;white-space:nowrap}
+  .chart{width:100%;height:420px;margin-top:8px}
+  .chart.sm{height:360px}
+  .note{font-size:12.5px;color:var(--sub);margin-top:6px}
+  /* 机型卡片 */
+  .pad{border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-top:14px}
+  .pad.recommend{border:1.6px solid var(--teal);background:linear-gradient(180deg,#f3f9f8,#fff)}
+  .pad-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px}
+  .pad-head .pname{font-size:17px;font-weight:700}
+  .badge{font-size:11.5px;padding:2px 9px;border-radius:999px;font-weight:600}
+  .badge.first{background:var(--teal);color:#fff}
+  .badge.eco{background:var(--amber-soft);color:var(--amber)}
+  .badge.game{background:#f6e7e3;color:var(--red)}
+  .pad-meta{font-size:12.8px;color:var(--sub);margin:4px 0 10px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;font-size:13.8px}
+  .cols .pro{color:#2c6b49} .cols .con{color:#a8493a}
+  .cols ul{margin-left:17px}
+  .fit{margin-top:9px;font-size:13.5px;background:#f6f8f8;border-radius:8px;padding:8px 12px}
+  .fit b{color:#1d524b}
+  /* 决策路径 */
+  .flow{display:flex;flex-direction:column;gap:0}
+  .flow-row{display:grid;grid-template-columns:230px 1fr;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line);align-items:center}
+  .flow-row:last-child{border-bottom:none}
+  .flow-q{font-weight:600;color:#1d524b;font-size:14px}
+  .flow-a{font-size:13.8px}
+  .flow-a .pick{display:inline-block;background:var(--teal-soft);border:1px solid #bfe0db;color:#1d524b;border-radius:7px;padding:2px 10px;margin:2px 4px 2px 0;font-weight:600;font-size:13px}
+  /* 建议 */
+  .tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+  .tip{border:1px solid var(--line);border-radius:10px;padding:13px 16px;font-size:13.7px;background:#fbfcfc}
+  .tip .tn{font-weight:700;color:#1d524b;margin-bottom:4px}
+  ol.src{margin-left:20px;font-size:12.6px;color:var(--sub)}
+  ol.src li{margin:3px 0}
+  .warn{background:var(--amber-soft);border:1px solid #ecd6b3;border-radius:9px;padding:10px 14px;font-size:13px;color:#7a5520;margin-top:12px}
+  @media(max-width:720px){
+    .bg-grid,.cols{grid-template-columns:1fr}
+    .flow-row{grid-template-columns:1fr;gap:5px}
+    .chart{height:340px}
+    h1{font-size:22px}
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <h1>大学生无纸化学习平板对比分析</h1>
+    <p>候选机型：联想小新 Pro GT 13 · Redmi K Pad · OPPO Pad Mini · OPPO Pad 6 · vivo Pad5 Pro</p>
+    <div class="tags">
+      <span class="tag">场景：上课记笔记 / 分屏看课件 / 手写批注</span>
+      <span class="tag">兼顾：偶尔游戏、看视频</span>
+      <span class="tag">时间：2026 年 9 月</span>
+      <span class="tag">背景：AI 普及 + 存储涨价周期</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- 一、结论速览 -->
+  <section>
+    <h2>一、结论速览（学习场景加权排名）</h2>
+    <p class="muted">权重按“无纸化学习为主、游戏影音为辅”设定：大屏分屏 20% · 手写与 AI 20% · 护眼 15% · 性价比 15% · 游戏/便携/续航各 10%。评分为基于公开参数的场景化编辑评分（满分 10，非实验室实测）。</p>
+    <div class="verdict-grid">
+      <div class="v-card top">
+        <div class="rank">首选 · 总分 8.7</div>
+        <div class="name">联想小新 Pro GT 13</div>
+        <div class="why">13.3" 最大 3.5K 护眼 LCD + 12000mAh + 即圈即 AI/错题本，学习属性最完整，国补后约 2549 元起，大屏旗舰芯性价比最高；代价是 680g 最重。</div>
+      </div>
+      <div class="v-card">
+        <div class="rank">次选 · 总分 8.5</div>
+        <div class="name">vivo Pad5 Pro</div>
+        <div class="why">13" 3.1K + 12050mAh + 八扬声器，影音游戏更爽，柔光版纸感书写；注意入门仅 8+128，建议上 12+256。</div>
+      </div>
+      <div class="v-card">
+        <div class="rank">均衡 · 总分 8.3</div>
+        <div class="name">OPPO Pad 6</div>
+        <div class="why">12.1" 7:5 比例最接近 A4 纸、柔光屏 + 莱茵 5.0，10420mAh；OPPO/一加手机用户互联加分。</div>
+      </div>
+      <div class="v-card">
+        <div class="rank">便携 · 总分 7.4</div>
+        <div class="name">OPPO Pad Mini</div>
+        <div class="why">279g 最轻、骁龙 8 Gen5、OLED 柔光素质高；但 8.8" 分屏记笔记偏小、价格最高，适合随身阅读批注。</div>
+      </div>
+      <div class="v-card">
+        <div class="rank">游戏向 · 总分 7.3</div>
+        <div class="name">Redmi K Pad</div>
+        <div class="why">天玑 9400+ / 165Hz / 双 C 口，小屏电竞最强、最划算；但 8.8" 不适合当“主力学习屏”，游戏优先再选它。</div>
+      </div>
+    </div>
+    <div class="warn">一句话：<b>以“上课无纸化学习”为主诉求，优先在两台 13 寸大屏里选——小新 Pro GT 13（学习 AI 与性价比优先）或 vivo Pad5 Pro（影音游戏与柔光书写优先）；两台 8.8 寸是“随身/游戏”路线，不建议作为唯一的学习主力机。</b></div>
+  </section>
+
+  <!-- 二、时代背景 -->
+  <section>
+    <h2>二、为什么 2026 年 9 月买平板要重新算账</h2>
+    <div class="bg-grid">
+      <div class="bg-box">
+        <b>存储超级周期：内存比芯片还贵</b>
+        <ul>
+          <li>AI 服务器虹吸 HBM/DRAM 产能，2026 Q2 通用 DRAM 合约价环比上涨约 58%–80%，NAND Flash 环比上涨约 70%–75%。</li>
+          <li>存储首次超过 SoC，成为手机/平板第一大物料成本，12GB+256GB 存储组合采购价约 2200 元；终端同配置普遍涨价 20% 以上。</li>
+          <li>含义：<b>存储无法后期扩容，今年“买小了以后换”代价更高，容量要一步到位；但也不必为用不上的 1TB 付高溢价。</b></li>
+        </ul>
+      </div>
+      <div class="bg-box" style="border-left-color:var(--teal)">
+        <b>AI 落地：学习场景真正用得上的是“笔 + AI”</b>
+        <ul>
+          <li>五款均为 2025–2026 年机型，系统级 AI 助手（圈搜、总结、翻译、消除）已成标配。</li>
+          <li>对学生增量最大的是<b>手写笔联动 AI</b>：圈选课件即搜即译、公式识别、错题本自动整理、录音转写总结。</li>
+          <li>这一项上小新“AI 妙笔 2.0 / 即圈即 AI / 错题本”与学习场景咬合最紧，是其相对优势。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 三、参数总表 -->
+  <section>
+    <h2>三、核心参数总表（官方/公开资料核验）</h2>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>维度</th>
+            <th>小新 Pro GT 13</th>
+            <th>Redmi K Pad</th>
+            <th>OPPO Pad Mini</th>
+            <th>OPPO Pad 6</th>
+            <th>vivo Pad5 Pro</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="dim">上市时间</td><td>2026.03</td><td>2025.06</td><td>2026.04</td><td>2026.05</td><td>2025.04（柔光版 2025.12）</td></tr>
+          <tr><td class="dim">屏幕尺寸/比例</td><td>13.3" / 16:10</td><td>8.8" / 16:10</td><td>8.8" / 3:2</td><td>12.1" / 7:5</td><td>13" / 约 3:2</td></tr>
+          <tr><td class="dim">分辨率/刷新</td><td>3504×2190（3.5K）/144Hz</td><td>3008×1880（3K）/165Hz</td><td>2520×1680（2.5K）/144Hz</td><td>3000×2120（3K）/144Hz</td><td>3096×2064（3.1K）/144Hz</td></tr>
+          <tr><td class="dim">面板/护眼</td><td>LCD，莱茵全局护眼 3.0、DC 调光，峰值约 800nit</td><td>LCD，调光友好但手动亮度约 500nit 偏低</td><td>OLED 明眸柔光（纳米蚀刻），局部峰值高，最低 2nit</td><td>IPS/柔光版，莱茵智能护眼 5.0、无反射认证</td><td>原彩护眼 LCD/柔光版纳米蚀刻降 50% 闪点</td></tr>
+          <tr><td class="dim">处理器</td><td>骁龙 8 Elite（至尊版）</td><td>天玑 9400+</td><td>骁龙 8 Gen5</td><td>天玑 9500s</td><td>天玑 9400</td></tr>
+          <tr><td class="dim">电池/快充</td><td>12000mAh / 68W</td><td>7500mAh / 67W</td><td>8000mAh / 67W</td><td>10420mAh / 官方页未标功率</td><td>12050mAh / 66W</td></tr>
+          <tr><td class="dim">重量/厚度</td><td>约 680g / 6.9mm</td><td>326g / 6.46mm</td><td>279g / 5.39mm</td><td>约 560g / 6.49mm</td><td>578g（柔光 637g）/6.07mm</td></tr>
+          <tr><td class="dim">扬声器</td><td>多扬声器 + 杜比</td><td>四音圈对称扬声器、杜比</td><td>立体声</td><td>多扬声器</td><td><b>八扬声器</b>全景声</td></tr>
+          <tr><td class="dim">手写笔</td><td>新一代智能笔，AI 妙笔 2.0、捏合即圈即 AI</td><td>适配小米焦点触控笔（通常另购，约 ¥329）</td><td>OPPO Pencil（另购），柔光纸感</td><td>OPPO Pencil（另购），类纸阻尼</td><td>vivo Pencil，促销/学生活动常附赠</td></tr>
+          <tr><td class="dim">AI/系统</td><td>天禧个人智能体、公式识别、错题本、AI 阅读总结；支持 iOS 跨生态互联</td><td>超级小爱、HyperOS（在售迭代款 K Pad 2 配自定义 AI 键）</td><td>小布智能体、ColorOS 16</td><td>小布智能体、ColorOS 16</td><td>蓝心智能、OriginOS 5 HD，PC 级 WPS、CAJViewer 文献阅读器</td></tr>
+          <tr><td class="dim">入门版本/官方价</td><td>8+256 / ¥2999</td><td>8+256 / ¥2799</td><td>12+256 / ¥3699</td><td>8+256 / ¥3299</td><td>8+128 / ¥2999</td></tr>
+          <tr><td class="dim">国补约 85 折参考</td><td>≈¥2549</td><td>≈¥2379</td><td>≈¥3144</td><td>≈¥2804</td><td>≈¥2549</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">注：国补按各地至高 15% 估算，实际以当地政策与下单页为准；价格为官方指导价/首发价，2026 年存储涨价周期中终端价存在波动。</p>
+  </section>
+
+  <!-- 四、图表 -->
+  <section>
+    <h2>四、学习场景能力画像（雷达图）</h2>
+    <div id="chartRadar" class="chart"></div>
+    <p class="note">数据口径：基于上表公开参数，对照“上课无纸化学习 + 偶尔游戏影音”需求做的场景化评分（0–10），非跑分软件实测。两台 13 寸大屏在“大屏分屏/续航”上明显拉开，两台 8.8 寸则在“便携/游戏”上反超。</p>
+  </section>
+
+  <section>
+    <h2>五、价格：官方起售价 vs 国补到手参考</h2>
+    <div id="chartPrice" class="chart sm"></div>
+    <p class="note">注意起售“容量”不同：vivo 为 8+128、其余多为 8+256（OPPO Pad Mini 直接 12+256 起步）。存储涨价周期里，跨机型比价要对齐到同一容量档位。</p>
+  </section>
+
+  <section>
+    <h2>六、硬件取向：电池、重量、屏幕尺寸</h2>
+    <div id="chartHw" class="chart sm"></div>
+    <p class="note">大屏机（小新/vivo/OPPO Pad 6）靠 1 万 mAh 以上电池换取全天网课续航，重量 560–680g，适合放课桌/支架；小屏机（K Pad/Mini）279–326g 可单手握持，但电池 7500–8000mAh 且分屏面积小。</p>
+  </section>
+
+  <section>
+    <h2>七、加权总分</h2>
+    <div id="chartScore" class="chart sm"></div>
+  </section>
+
+  <!-- 八、逐机型点评 -->
+  <section>
+    <h2>八、逐机型点评与购买建议</h2>
+
+    <div class="pad recommend">
+      <div class="pad-head"><span class="pname">联想小新 Pro GT 13</span><span class="badge first">学习首选</span><span class="badge eco">大屏性价比</span></div>
+      <div class="pad-meta">13.3" 3.5K LCD · 骁龙 8 Elite · 12000mAh/68W · 680g · 8+256 ¥2999（国补≈2549），12+256 ¥3399</div>
+      <div class="cols">
+        <div class="pro">优势
+          <ul>
+            <li>五款中最大、最清晰的 13.3" 3.5K 屏，一屏左课件右笔记最从容；LCD + 莱茵 3.0 + DC 调光，长时间看字更稳。</li>
+            <li>学习向 AI 最完整：AI 妙笔 2.0、捏笔即圈即搜即译、手写公式识别、错题本自动生成、AI 阅读总结。</li>
+            <li>12000mAh 硅负极电池 + 68W，网课一整天无压力；骁龙 8 Elite 偶尔大型游戏也够用。</li>
+            <li>支持 iOS 跨生态互联，用 iPhone 的同学也能联动；原生适配 WPS、剪映专业版。</li>
+          </ul>
+        </div>
+        <div class="con">短板
+          <ul>
+            <li>680g、13.3 寸是五款中最重最大，长时间手持累，基本要靠支架/键盘套，通勤背负感明显。</li>
+            <li>手写笔需确认套装是否随附，采购时把笔预算算进去。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="fit"><b>适合：</b>绝大多数“平板=课堂笔记本+课件阅读器”、以课桌固定使用为主、追求大屏护眼和学习 AI、预算 2500–3400 的学生。<b>推荐配置：12+256（¥3399，国补后约 2889）</b>，涨价周期里比 8+256 更抗用。</div>
+    </div>
+
+    <div class="pad">
+      <div class="pad-head"><span class="pname">vivo Pad5 Pro</span><span class="badge first" style="background:#3d6b8b">影音全能次选</span></div>
+      <div class="pad-meta">13" 3.1K · 天玑 9400 · 12050mAh/66W · 578g（柔光 637g）· 8+128 ¥2999，柔光版 12+256 ¥3599</div>
+      <div class="cols">
+        <div class="pro">优势
+          <ul>
+            <li>13" 3.1K 大屏 + 八扬声器全景声，是五款里看网课/电影、玩游戏沉浸感最强的之一。</li>
+            <li>12050mAh 电池最大；天玑 9400 性能够旗舰，比小新略轻（578g）。</li>
+            <li>柔光版纳米蚀刻柔光屏，手写有类纸阻尼、降反光闪点；内置 PC 级 WPS 与 CAJViewer，读知网文献/写论文友好。</li>
+          </ul>
+        </div>
+        <div class="con">短板
+          <ul>
+            <li>入门是 8+128，在 2026 年存储涨价、课件视频越积越多的背景下明显偏小，不建议买最低配。</li>
+            <li>柔光版比标准版重（637g）且更贵；AI 学习功能不如小新“错题本/公式识别”那么成体系。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="fit"><b>适合：</b>同样要 13 寸大屏，但更看重影音游戏、扬声器和柔光纸感书写，且使用 vivo/iQOO 手机的学生。<b>推荐配置：12+256 起步（或柔光版 12+256 ¥3599）</b>，避开 8+128。</div>
+    </div>
+
+    <div class="pad">
+      <div class="pad-head"><span class="pname">OPPO Pad 6</span><span class="badge eco">纸张比例均衡派</span></div>
+      <div class="pad-meta">12.1" 3K · 天玑 9500s · 10420mAh · 约 560g · 8+256 ¥3299（国补≈2804）</div>
+      <div class="cols">
+        <div class="pro">优势
+          <ul>
+            <li>12.1" 的 7:5 比例竖向最接近一张 A4 纸，翻 PDF、做整页笔记、看电子书上下留白更少。</li>
+            <li>柔光版柔光屏 + 莱茵智能护眼 5.0 + 无反射认证，类纸阻尼书写，图书馆/靠窗抗反光好。</li>
+            <li>10420mAh 大电池、560g 在大屏机里相对轻；天玑 9500s + 天工散热，主流游戏满帧无压力。</li>
+          </ul>
+        </div>
+        <div class="con">短板
+          <ul>
+            <li>屏幕绝对尺寸比两台 13 寸小一圈，分屏时每半边略窄；峰值亮度中规中矩。</li>
+            <li>手写笔通常另购；性能定位略低于另外几颗旗舰芯（对学习无影响）。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="fit"><b>适合：</b>大量竖屏读 PDF/文献、喜欢“在纸上写字”手感、用 OPPO/一加手机（靠近共享 5G、应用接力）的学生。</div>
+    </div>
+
+    <div class="pad">
+      <div class="pad-head"><span class="pname">OPPO Pad Mini</span><span class="badge" style="background:#e9eff4;color:#3d6b8b">极致便携</span></div>
+      <div class="pad-meta">8.8" 2.5K OLED 柔光 · 骁龙 8 Gen5 · 8000mAh/67W · 279g/5.39mm · 12+256 ¥3699（国补≈3144）</div>
+      <div class="cols">
+        <div class="pro">优势
+          <ul>
+            <li>279g、5.39mm，比很多手机还轻薄，能塞口袋、单手握持，通勤/自习室随身无负担。</li>
+            <li>骁龙 8 Gen5 是五款里最新的旗舰芯，OLED 柔光屏对比度/峰值亮度/黑场表现最好，最低 2nit 夜读舒服。</li>
+            <li>起步即 12+256，内存配置不缩水；3:2 比例阅读友好。</li>
+          </ul>
+        </div>
+        <div class="con">短板
+          <ul>
+            <li>8.8" 分屏后“课件 + 笔记”两栏都很窄，不适合长时间主力记笔记；OLED 存在低亮度频闪体质人群需留意（柔光屏 + 调光有缓解）。</li>
+            <li>单价最高（¥3699 起），用最大屏价格买最小屏，性价比一般；柔光版还要再加约 500 元。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="fit"><b>适合：</b>已有主力电脑/大屏、把平板当“随身阅读器 + 批注本 + 游戏机”，极度看重单手便携和屏幕素质的学生；不建议作为唯一学习设备。</div>
+    </div>
+
+    <div class="pad">
+      <div class="pad-head"><span class="pname">Redmi K Pad</span><span class="badge game">小屏电竞</span></div>
+      <div class="pad-meta">8.8" 3K LCD · 天玑 9400+ · 7500mAh/67W · 326g · 8+256 ¥2799（国补≈2379）</div>
+      <div class="cols">
+        <div class="pro">优势
+          <ul>
+            <li>五款中游戏取向最强：天玑 9400+、165Hz 高刷、372Hz 触控采样、VC 液冷、双 USB-C（边充边玩不挡手）。</li>
+            <li>LCD 无 OLED 频闪，价格门槛最低，国补后约 2379 元，326g 便携。</li>
+            <li>支持磁吸手写笔，应急记笔记没问题。</li>
+          </ul>
+        </div>
+        <div class="con">短板
+          <ul>
+            <li>8.8" 分屏学习局促，手动最高亮度约 500nit，靠窗/强光教室偏暗；边框因 LCD 封装较宽。</li>
+            <li>为初代型号（2025.6），2026.4 已迭代到 K Pad 2（天玑 9500、9100mAh、345g，¥3399 起），购买时注意区分新旧、留意清仓价是否划算。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="fit"><b>适合：</b>游戏权重高、想要小屏随身 + 最低预算，学习以“看/批注”为主而非大量分屏打字记笔记的学生。若预算能到 3400 且追新，可对比 K Pad 2。</div>
+    </div>
+  </section>
+
+  <!-- 九、决策路径 -->
+  <section>
+    <h2>九、按你的偏好，30 秒对号入座</h2>
+    <div class="flow">
+      <div class="flow-row"><div class="flow-q">主要在课桌/宿舍固定使用，要一屏课件+笔记？</div><div class="flow-a"><span class="pick">小新 Pro GT 13（首选）</span><span class="pick">vivo Pad5 Pro</span> —— 13 寸大屏是刚需，8.8 寸直接排除。</div></div>
+      <div class="flow-row"><div class="flow-q">大量竖屏看 PDF / 文献，喜欢类纸书写？</div><div class="flow-a"><span class="pick">OPPO Pad 6（7:5 柔光）</span><span class="pick">vivo Pad5 Pro 柔光版</span></div></div>
+      <div class="flow-row"><div class="flow-q">经常背着走、单手用、已有电脑当主力？</div><div class="flow-a"><span class="pick">OPPO Pad Mini（279g 屏最好）</span><span class="pick">Redmi K Pad（更便宜、更偏游戏）</span></div></div>
+      <div class="flow-row"><div class="flow-q">游戏（原神/星铁/吃鸡高帧）权重很高？</div><div class="flow-a"><span class="pick">Redmi K Pad / K Pad 2（165Hz 电竞小屏）</span>，大屏阵营选 <span class="pick">vivo Pad5 Pro / 小新 Pro GT 13</span></div></div>
+      <div class="flow-row"><div class="flow-q">用哪个品牌手机？</div><div class="flow-a">小米/红米→K Pad；OPPO/一加→Pad 6 / Pad Mini；vivo/iQOO→Pad5 Pro；iPhone→小新（支持 iOS 互联）。同品牌生态联动（剪贴板、应用接力、通话共享）是长期隐性体验。</div></div>
+    </div>
+  </section>
+
+  <!-- 十、涨价周期购买建议 -->
+  <section>
+    <h2>十、存储涨价周期下的五条购买纪律</h2>
+    <div class="tips">
+      <div class="tip"><div class="tn">① 容量一步到位，256G 起步</div>课件 PDF、手写笔记、录课、游戏会在两三年内持续累积，平板不能插卡扩容；今年二次换机更贵。128G 只适合纯在线、不存本地的极轻用户。</div>
+      <div class="tip"><div class="tn">② 甜点是 12+256，不必冲 1TB</div>学习 + 主流游戏 12GB 运存 + 256G 存储足够；涨价周期中顶配溢价被放大，把预算留给手写笔和键盘套更实用。</div>
+      <div class="tip"><div class="tn">③ 务必叠国补 + 教育/学生优惠</div>国补至高 15%（五款约等于 85 折），叠加平台券、学生认证、以旧换新；vivo/联想等常有学生赠笔活动，等于省下手写笔钱。</div>
+      <div class="tip"><div class="tn">④ 预算记得单列“手写笔”</div>无纸化学习的核心外设是笔：多数安卓平板手写笔需单独购买（约 ¥300–500），下单前确认是“套装含笔”还是“笔另购”，并确认是否支持磁吸无线充电。</div>
+      <div class="tip"><div class="tn">⑤ 涨价周期“早买早用、认准现行款”</div>存储价格短期易涨难跌，看到合适的国补价可入手；同时认准型号年份（如 K Pad 与 K Pad 2、标准版与柔光版），避免按新款价买到旧配置。</div>
+    </div>
+  </section>
+
+  <!-- 来源 -->
+  <section>
+    <h2>数据来源与口径说明</h2>
+    <ol class="src">
+      <li>参数与价格：各品牌官网/官方商城（联想商城、OPPO 商城、vivo 官网、小米官网）、中关村在线产品库、太平洋科技、IT之家、快科技、腾讯/新浪科技发布稿（2025.04–2026.09）。</li>
+      <li>存储涨价：央视网（发改委价格监测中心，2026.02）、中国经济网（2026.08，Q2 DRAM +58%–63%、NAND +70%–75%）、新浪财经/Counterpoint（Q2 手机内存环比 +80%）、21 财经（2026.07）。</li>
+      <li>国补价按官方指导价 × 0.85 估算，仅作横向参考，实际以下单页与当地政策为准。</li>
+      <li>能力评分为对照本需求的场景化编辑评分，非软件跑分；处理器性能对“学习记笔记”场景普遍过剩，差异主要体现在游戏与多任务。</li>
+      <li>OPPO Pad 6 官方参数页未标注快充功率，故表中留空，不作推测。</li>
+    </ol>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  if(typeof echarts === 'undefined'){
+    var charts = document.querySelectorAll('.chart');
+    for(var i=0;i<charts.length;i++){ charts[i].innerHTML='<p style="padding:24px;color:#888;font-size:13px">图表库未加载成功，可查看上方参数表与文字结论，数据不受影响。</p>'; }
+    return;
+  }
+  var names = ['小新Pro GT 13','Redmi K Pad','OPPO Pad Mini','OPPO Pad 6','vivo Pad5 Pro'];
+  var colors = ['#2f8f83','#d08a2e','#5b8fb9','#7bb661','#b0638f'];
+  var baseText = {color:'#44504e'};
+
+  // 雷达
+  var c1 = echarts.init(document.getElementById('chartRadar'));
+  c1.setOption({
+    backgroundColor:'transparent',
+    color:colors,
+    title:{text:'五款平板学习场景能力对比（编辑评分 0–10）',left:'center',textStyle:{fontSize:15,color:'#1f2726'}},
+    tooltip:{trigger:'item',triggerOn:'click',renderMode:'richText',confine:true,textStyle:{fontSize:11,lineHeight:15},padding:[6,8]},
+    legend:{bottom:0,itemWidth:14,itemHeight:8,textStyle:{fontSize:11.5,color:'#5b6664'},type:'scroll'},
+    radar:{
+      indicator:[
+        {name:'大屏分屏学习',max:10},{name:'护眼',max:10},{name:'手写笔与AI',max:10},
+        {name:'游戏娱乐',max:10},{name:'便携',max:10},{name:'续航',max:10},{name:'性价比',max:10}
+      ],
+      center:['50%','52%'],radius:'62%',
+      axisName:{color:'#44504e',fontSize:12},
+      splitArea:{areaStyle:{color:['#f7faf9','#eef4f3']}}
+    },
+    series:[{type:'radar',data:[
+      {name:names[0],value:[9.5,9,9.5,8,4.5,9.5,9],areaStyle:{opacity:0.08}},
+      {name:names[1],value:[5,7,7,9.5,9,7.5,8.5],areaStyle:{opacity:0.05}},
+      {name:names[2],value:[5,8,8,9,10,7.5,6.5],areaStyle:{opacity:0.05}},
+      {name:names[3],value:[8.5,9,8,8,7,9,8],areaStyle:{opacity:0.05}},
+      {name:names[4],value:[9,9,8,9,6.5,9.5,8.5],areaStyle:{opacity:0.05}}
+    ]}]
+  });
+
+  // 价格
+  var c2 = echarts.init(document.getElementById('chartPrice'));
+  c2.setOption({
+    backgroundColor:'transparent',
+    title:{text:'官方起售价 vs 国补到手参考（元）',subtext:'注意入门容量不同：vivo 为 8+128，OPPO Pad Mini 为 12+256，其余为 8+256',left:'center',textStyle:{fontSize:15,color:'#1f2726'},subtextStyle:{fontSize:11,color:'#8a9391'}},
+    tooltip:{trigger:'axis',triggerOn:'click',renderMode:'richText',confine:true,textStyle:{fontSize:11,lineHeight:15},padding:[6,8],axisPointer:{type:'shadow'}},
+    legend:{top:46,itemWidth:14,itemHeight:8,textStyle:{fontSize:11.5,color:'#5b6664'}},
+    grid:{left:20,right:20,top:84,bottom:30,containLabel:true},
+    xAxis:{type:'category',data:names,axisLabel:{color:'#44504e',fontSize:11.5,interval:0}},
+    yAxis:{type:'value',name:'元',axisLabel:{color:'#5b6664'},splitLine:{lineStyle:{color:'#ecefef'}}},
+    series:[
+      {name:'官方起售价',type:'bar',barWidth:26,data:[2999,2799,3699,3299,2999],itemStyle:{color:'#9fc9c2',borderRadius:[4,4,0,0]},label:{show:true,position:'top',fontSize:11,color:'#44504e'}},
+      {name:'国补约85折',type:'bar',barWidth:26,data:[2549,2379,3144,2804,2549],itemStyle:{color:'#2f8f83',borderRadius:[4,4,0,0]},label:{show:true,position:'top',fontSize:11,color:'#1d524b',fontWeight:'bold'}}
+    ]
+  });
+
+  // 硬件：电池 + 重量 双轴
+  var c3 = echarts.init(document.getElementById('chartHw'));
+  c3.setOption({
+    backgroundColor:'transparent',
+    title:{text:'电池容量（柱）与整机重量（线）',left:'center',textStyle:{fontSize:15,color:'#1f2726'}},
+    tooltip:{trigger:'axis',triggerOn:'click',renderMode:'richText',confine:true,textStyle:{fontSize:11,lineHeight:15},padding:[6,8]},
+    legend:{top:30,itemWidth:14,itemHeight:8,textStyle:{fontSize:11.5,color:'#5b6664'}},
+    grid:{left:20,right:24,top:70,bottom:30,containLabel:true},
+    xAxis:{type:'category',data:names,axisLabel:{color:'#44504e',fontSize:11.5,interval:0}},
+    yAxis:[
+      {type:'value',name:'电池 mAh',min:6000,axisLabel:{color:'#5b6664'},splitLine:{lineStyle:{color:'#ecefef'}}},
+      {type:'value',name:'重量 g',min:200,max:750,axisLabel:{color:'#a8772e'},splitLine:{show:false}}
+    ],
+    series:[
+      {name:'电池容量',type:'bar',barWidth:30,data:[12000,7500,8000,10420,12050],itemStyle:{color:'#cfe5e1',borderRadius:[4,4,0,0]},label:{show:true,position:'top',fontSize:10.5,color:'#1d524b'}},
+      {name:'整机重量',type:'line',yAxisIndex:1,data:[680,326,279,560,578],smooth:false,symbolSize:9,lineStyle:{color:'#d08a2e',width:2.5},itemStyle:{color:'#d08a2e'},label:{show:true,fontSize:10.5,color:'#a8772e'}}
+    ]
+  });
+
+  // 总分
+  var scoreData = [
+    {n:'小新Pro GT 13',v:8.7},{n:'vivo Pad5 Pro',v:8.53},{n:'OPPO Pad 6',v:8.25},{n:'OPPO Pad Mini',v:7.43},{n:'Redmi K Pad',v:7.33}
+  ].sort(function(a,b){return a.v-b.v;});
+  var c4 = echarts.init(document.getElementById('chartScore'));
+  c4.setOption({
+    backgroundColor:'transparent',
+    title:{text:'学习场景加权总分（满分10）',left:'center',textStyle:{fontSize:15,color:'#1f2726'}},
+    tooltip:{trigger:'axis',triggerOn:'click',renderMode:'richText',confine:true,textStyle:{fontSize:11},padding:[6,8],axisPointer:{type:'shadow'}},
+    grid:{left:20,right:40,top:56,bottom:24,containLabel:true},
+    xAxis:{type:'value',max:10,axisLabel:{color:'#5b6664'},splitLine:{lineStyle:{color:'#ecefef'}}},
+    yAxis:{type:'category',data:scoreData.map(function(d){return d.n;}),axisLabel:{color:'#44504e',fontSize:12}},
+    series:[{
+      type:'bar',barWidth:22,
+      data:scoreData.map(function(d,i){return {value:d.v,itemStyle:{color:i===scoreData.length-1?'#2f8f83':'#9fc9c2',borderRadius:[0,4,4,0]}};}),
+      label:{show:true,position:'right',fontSize:12,fontWeight:'bold',color:'#1d524b',formatter:'{c}'}
+    }]
+  });
+
+  function resizeAll(){c1.resize();c2.resize();c3.resize();c4.resize();}
+  window.addEventListener('resize',resizeAll);
+})();
+</script>
+</body>
+</html>
